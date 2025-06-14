@@ -6,19 +6,65 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
-// Heart-shaped mood images matching the provided images
+// TypeScript interfaces
+interface MoodType {
+  image: any;
+  label: string;
+  color: string;
+  icon: any;
+}
+
+// FIXED: Try these path options in order of priority
+
+// Option 1: From project root (try this first)
 const moodImages = {
-  happy: require('../../../assets/images/moods/happy.png'),      // Image 1 - Happy smile
-  excited: require('../../../assets/images/moods/excited.png'),  // Image 2 - Excited open mouth
-  playful: require('../../../assets/images/moods/playful.png'),  // Image 3 - Playful wink
-  angry: require('../../../assets/images/moods/angry.png'),      // Image 4 - Angry frown
-  sad: require('../../../assets/images/moods/sad.png'),          // Image 5 - Sad frown
-  surprised: require('../../../assets/images/moods/surprised.png'), // Image 6 - Surprised
-  tired: require('../../../assets/images/moods/tired.png'),      // Image 7 - Tired/neutral
-  silly: require('../../../assets/images/moods/silly.png'),      // Image 8 - Silly tongue out
+  happy: require('../../assets/images/moods/happy.png'),
+  excited: require('../../assets/images/moods/excited.png'),
+  playful: require('../../assets/images/moods/playful.png'),
+  angry: require('../../assets/images/moods/angry.png'),
+  sad: require('../../assets/images/moods/sad.png'),
+  surprised: require('../../assets/images/moods/surprised.png'),
+  tired: require('../../assets/images/moods/tired.png'),
+  silly: require('../../assets/images/moods/silly.png'),
 };
 
-const moods = [
+// Option 2: If Option 1 fails, uncomment this and comment Option 1
+/* const moodImages = {
+  happy: require('../../assets/images/moods/happy.png'),
+  excited: require('../../assets/images/moods/excited.png'),
+  playful: require('../../assets/images/moods/playful.png'),
+  angry: require('../../assets/images/moods/angry.png'),
+  sad: require('../../assets/images/moods/sad.png'),
+  surprised: require('../../assets/images/moods/surprised.png'),
+  tired: require('../../assets/images/moods/tired.png'),
+  silly: require('../../assets/images/moods/silly.png'),
+}; */
+
+// Option 3: If both above fail, try without going up directories
+/* const moodImages = {
+  happy: require('assets/images/moods/happy.png'),
+  excited: require('assets/images/moods/excited.png'),
+  playful: require('assets/images/moods/playful.png'),
+  angry: require('assets/images/moods/angry.png'),
+  sad: require('assets/images/moods/sad.png'),
+  surprised: require('assets/images/moods/surprised.png'),
+  tired: require('assets/images/moods/tired.png'),
+  silly: require('assets/images/moods/silly.png'),
+}; */
+
+// Option 4: Fallback - Use placeholder images if files don't exist
+/* const moodImages = {
+  happy: require('react-native/Libraries/NewAppScreen/components/logo.png'), // Default RN image
+  excited: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+  playful: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+  angry: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+  sad: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+  surprised: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+  tired: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+  silly: require('react-native/Libraries/NewAppScreen/components/logo.png'),
+}; */
+
+const moods: MoodType[] = [
   { 
     image: moodImages.happy, 
     label: 'Happy', 
@@ -70,9 +116,9 @@ const moods = [
 ];
 
 export default function HomeScreen() {
-  const [selectedMood, setSelectedMood] = useState(null);
-  const [realTalkMode, setRealTalkMode] = useState(false);
-  const [moodIntensity, setMoodIntensity] = useState(3);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [realTalkMode, setRealTalkMode] = useState<boolean>(false);
+  const [moodIntensity, setMoodIntensity] = useState<number>(3);
 
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -81,29 +127,27 @@ export default function HomeScreen() {
     day: 'numeric'
   });
 
-  const handleMoodSelection = (moodLabel) => {
+  const handleMoodSelection = (moodLabel: string): void => {
     setSelectedMood(moodLabel);
   };
 
-  const handleIntensityChange = (level) => {
+  const handleIntensityChange = (level: number): void => {
     setMoodIntensity(level);
   };
 
-  const handleRealTalkToggle = () => {
+  const handleRealTalkToggle = (): void => {
     setRealTalkMode(!realTalkMode);
   };
 
-  const handleJournalEntry = () => {
-    // Add journal entry logic here
+  const handleJournalEntry = (): void => {
     console.log('Add journal entry pressed');
   };
 
-  const handleQuickNote = () => {
-    // Add quick note logic here
+  const handleQuickNote = (): void => {
     console.log('Quick note pressed');
   };
 
-  const renderMoodCard = (mood, index) => {
+  const renderMoodCard = (mood: MoodType, index: number) => {
     const isSelected = selectedMood === mood.label;
     const IconComponent = mood.icon;
     
@@ -118,13 +162,18 @@ export default function HomeScreen() {
         onPress={() => handleMoodSelection(mood.label)}
         activeOpacity={0.7}
       >
-        {/* Heart-shaped mood images */}
+        {/* FIXED: Better error handling for images */}
         <View style={styles.moodIconContainer}>
           <Image 
             source={mood.image} 
             style={styles.moodImage}
             resizeMode="contain"
-            onError={() => console.log(`Failed to load image for ${mood.label}`)}
+            onError={(error) => {
+              console.log(`Failed to load image for ${mood.label}:`, error.nativeEvent.error);
+            }}
+            onLoad={() => {
+              console.log(`Successfully loaded image for ${mood.label}`);
+            }}
           />
         </View>
         <Text style={styles.moodLabel}>{mood.label}</Text>
@@ -132,7 +181,7 @@ export default function HomeScreen() {
     );
   };
 
-  const renderIntensityDot = (level) => (
+  const renderIntensityDot = (level: number) => (
     <TouchableOpacity
       key={level}
       style={[
@@ -256,13 +305,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 28,
-    fontWeight: 'bold', // Fallback for custom fonts
+    fontWeight: 'bold',
     color: '#2D3748',
     marginBottom: 4,
   },
   date: {
     fontSize: 16,
-    fontWeight: '400', // Fallback for custom fonts
+    fontWeight: '400',
     color: '#718096',
   },
   realTalkContainer: {
@@ -286,7 +335,7 @@ const styles = StyleSheet.create({
   },
   realTalkTitle: {
     fontSize: 16,
-    fontWeight: '600', // Fallback for custom fonts
+    fontWeight: '600',
     color: '#2D3748',
     marginLeft: 8,
   },
@@ -326,7 +375,7 @@ const styles = StyleSheet.create({
   },
   realTalkText: {
     fontSize: 14,
-    fontWeight: '400', // Fallback for custom fonts
+    fontWeight: '400',
     color: '#2D3748',
     lineHeight: 20,
   },
@@ -336,14 +385,14 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 22,
-    fontWeight: '600', // Fallback for custom fonts
+    fontWeight: '600',
     color: '#2D3748',
     textAlign: 'center',
     marginBottom: 4,
   },
   subQuestion: {
     fontSize: 14,
-    fontWeight: '400', // Fallback for custom fonts
+    fontWeight: '400',
     color: '#718096',
     textAlign: 'center',
   },
@@ -383,7 +432,7 @@ const styles = StyleSheet.create({
   },
   moodLabel: {
     fontSize: 12,
-    fontWeight: '500', // Fallback for custom fonts
+    fontWeight: '500',
     color: '#2D3748',
     textAlign: 'center',
   },
@@ -400,7 +449,7 @@ const styles = StyleSheet.create({
   },
   intensityTitle: {
     fontSize: 16,
-    fontWeight: '600', // Fallback for custom fonts
+    fontWeight: '600',
     color: '#2D3748',
     textAlign: 'center',
     marginBottom: 20,
@@ -426,7 +475,7 @@ const styles = StyleSheet.create({
   },
   intensityLabel: {
     fontSize: 12,
-    fontWeight: '400', // Fallback for custom fonts
+    fontWeight: '400',
     color: '#718096',
   },
   quickActions: {
@@ -449,12 +498,12 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: 14,
-    fontWeight: '600', // Fallback for custom fonts
+    fontWeight: '600',
     color: 'white',
   },
   actionButtonTextSecondary: {
     fontSize: 14,
-    fontWeight: '600', // Fallback for custom fonts
+    fontWeight: '600',
     color: '#FF6B9D',
   },
   encouragementCard: {
@@ -471,13 +520,13 @@ const styles = StyleSheet.create({
   },
   encouragementTitle: {
     fontSize: 16,
-    fontWeight: '600', // Fallback for custom fonts
+    fontWeight: '600',
     color: '#2D3748',
     marginBottom: 8,
   },
   encouragementText: {
     fontSize: 14,
-    fontWeight: '400', // Fallback for custom fonts
+    fontWeight: '400',
     color: '#4A5568',
     lineHeight: 20,
   },
