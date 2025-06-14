@@ -20,12 +20,12 @@ interface MoodType {
 const moodImages = {
   happy: require('../../assets/images/moods/happy.png'),
   excited: require('../../assets/images/moods/excited.png'),
-  playful: require('../../assets/images/moods/playful.png'),
+  playful: require('../../assets/images/moods/loving.png'),
   angry: require('../../assets/images/moods/angry.png'),
   sad: require('../../assets/images/moods/sad.png'),
-  surprised: require('../../assets/images/moods/surprised.png'),
+  surprised: require('../../assets/images/moods/confused.png'),
   tired: require('../../assets/images/moods/tired.png'),
-  silly: require('../../assets/images/moods/silly.png'),
+  silly: require('../../assets/images/moods/anxious.png'),
 };
 
 // Option 2: If Option 1 fails, uncomment this and comment Option 1
@@ -257,23 +257,63 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Quick Actions */}
-          <View style={styles.quickActions}>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={handleJournalEntry}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.actionButtonText}>Add Journal Entry</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.actionButtonSecondary]}
-              onPress={handleQuickNote}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.actionButtonTextSecondary}>Quick Note</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Emotional Sharing Options */}
+          {selectedMood && (
+            <View style={styles.sharingContainer}>
+              <Text style={styles.sharingTitle}>Share your emotions with...</Text>
+              <Text style={styles.sharingSubtitle}>Choose how you'd like to express yourself</Text>
+              
+              <View style={styles.sharingOptions}>
+                <TouchableOpacity 
+                  style={styles.sharingOption}
+                  onPress={handlePrivateReflection}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.sharingIconContainer, { backgroundColor: '#E6FFFA' }]}>
+                    <Edit3 size={24} color="#38B2AC" />
+                  </View>
+                  <View style={styles.sharingContent}>
+                    <Text style={styles.sharingOptionTitle}>📝 Just for Me</Text>
+                    <Text style={styles.sharingOptionDescription}>
+                      Privately reflect and keep it with yourself
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.sharingOption}
+                  onPress={handleCloseCircleShare}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.sharingIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                    <Users size={24} color="#4299E1" />
+                  </View>
+                  <View style={styles.sharingContent}>
+                    <Text style={styles.sharingOptionTitle}>👥 Close Circle</Text>
+                    <Text style={styles.sharingOptionDescription}>
+                      Share with your trusted friends only
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.sharingOption}
+                  onPress={handleOpenShare}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.sharingIconContainer, { backgroundColor: '#F0FFF4' }]}>
+                    <Globe size={24} color="#48BB78" />
+                  </View>
+                  <View style={styles.sharingContent}>
+                    <Text style={styles.sharingOptionTitle}>🌍 Open to All</Text>
+                    <Text style={styles.sharingOptionDescription}>
+                      Let others feel and respond to your emotion
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
 
           {/* Today's Encouragement */}
           <View style={styles.encouragementCard}>
